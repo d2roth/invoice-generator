@@ -6,6 +6,21 @@ class TogglTimeEntry extends BaseModel {
   public $parsed_description;
   public $type = 'other';
 
+  protected $types = [
+    'issue' => [
+      'description' => '^(?<description>.*)- Issue #(?<id>\d+)$',
+      'link'        => 'https://sentry.io/issues/{id}/',
+    ],
+    'ticket' => [
+      'description' => '^(?<description>.*)- Ticket #(?<id>\d+)$',
+      'link'        => 'https://fireside.teamwork.com/desk/tickets/{id}/messages',
+    ],
+    'task' => [
+      'description' => '^(?<description>.*)- Task #(?<id>\d+)$',
+      'link'        => 'https://fireside.teamwork.com/app/tasks/{id}',
+    ],
+  ];
+
   function __construct($time_entry){
     parent::__construct($time_entry);
 
@@ -14,16 +29,10 @@ class TogglTimeEntry extends BaseModel {
   }
 
   private function parse_description( $description = ""){
-
-    $types = [
-      'issue' => '^(?<description>.*)- Issue #(?<id>\d+)$',
-      'ticket' => '^(?<description>.*)- Ticket #(?<id>\d+)$',
-    ];
-    
     $matched = false;
 
-    foreach( $types as $type => $regex){
-      $matched = preg_match( '/' . $regex . '/i', $description, $matches );
+    foreach( $this->types as $type => $config){
+      $matched = preg_match( '/' . $config['description'] . '/i', $description, $matches );
       if( $matched ){
         $this->type    = $type;
         break;
@@ -41,13 +50,12 @@ class TogglTimeEntry extends BaseModel {
     }
   }
 
-  public function get_link(){
-    $links = [
-      'issue' => 'https://sentry.io/issues/{id}/',
-      'ticket' => 'https://fireside.teamwork.com/desk/tickets/{id}/messages',
-    ];
+  public function get_config( $key ){
+    return $this->types[$this->type][$key] ?? false;
+  }
 
-    return isset( $links[$this->type] ) ? str_replace("{id}", $this->parsed_description->id, $links[$this->type]) : false;
+  public function get_link(){
+    return $this->get_config('link') ? str_replace("{id}", $this->parsed_description->id, $this->get_config('link')) : false;
   }
 
   public function get_is_billable(){
