@@ -90,6 +90,12 @@ foreach( $projects as $k => $project ){
                 <details open>
                   <summary><strong><?= htmlspecialchars(ucwords($type));?></strong></summary>
                   <?php foreach( $items as $id => $details ):
+                                  uasort($details->items, function($a, $b){
+                                    if ($a->get_is_billable() == $b->get_is_billable()){
+                                      return 0;
+                                    }
+                                    return $a->get_is_billable() > $b->get_is_billable() ? -1 : 1;
+                                  });
                     $project = $details->items[0]->project_id && isset( $projects[$details->items[0]->project_id] ) ? $projects[$details->items[0]->project_id] : false;
                     ?>
                       <?php if( $project ):?>
