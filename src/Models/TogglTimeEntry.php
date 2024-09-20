@@ -12,12 +12,16 @@ class TogglTimeEntry extends BaseModel {
       'link'        => 'https://sentry.io/issues/{id}/',
     ],
     'ticket' => [
-      'description' => '^(?<description>.*)- Ticket #(?<id>\d+)$',
+      'description' => '^(?<description>.*)- Ticket #(?<id>.+)$',
       'link'        => 'https://fireside.teamwork.com/desk/tickets/{id}/messages',
     ],
     'task' => [
       'description' => '^(?<description>.*)- Task #(?<id>\d+)$',
       'link'        => 'https://fireside.teamwork.com/app/tasks/{id}',
+    ],
+    'jira' => [
+      'description' => '^(?<description>.*)- Jira (?<id>.+)$',
+      'link'        => 'https://supremeopti.atlassian.net/browse/{id}',
     ],
   ];
 
