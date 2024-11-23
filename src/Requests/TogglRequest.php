@@ -23,14 +23,14 @@ class TogglRequest extends Request{
     );
   }
 
-  public function request( $path, $method = "GET", $args = "" ){
+  public function request( $path, $method = "GET", $args = [] ){
     $parameters = [
       '{workspace_id}' => $this->workspace_id,
     ];
 
     $path = str_replace(array_keys($parameters), array_values($parameters), $path);
 
-    $results = $this->cache(md5($path . json_encode( $args )), function() use ($path, $method, $args){
+    $results = $this->cache(md5($path . $method . json_encode( $args )), function() use ($path, $method, $args){
 
       $curl = curl_init();
 
@@ -50,7 +50,11 @@ class TogglRequest extends Request{
       ]);
 
       if( !empty( $args ) ){
-        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($args));
+        if( $method == "GET" ){
+          $path .= (strpos( $path, "?" ) === false ? "?" : "&") . http_build_query($args);
+        } else {
+          curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($args));
+        }
       }
 
       $response = curl_exec($curl);
