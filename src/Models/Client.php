@@ -10,20 +10,21 @@ class Client extends BaseModel {
   
   public $report;
   public $frequency = 'monthly';
-  public $last_invoiced_date = 'April 1, 2024';
+  public $period_start_date = 'April 1, 2024';
+  public $last_invoice_date;
   public $next_invoice_date;
 
   function __construct( $attributes ){
     parent::__construct($attributes);
     $this->report = new \stdClass();
 
-    $this->report->start_date = new DateTime($this->last_invoiced_date);
+    $this->report->start_date = new DateTime($this->period_start_date);
 
     if( $this->frequency instanceof DateInterval ){
-      $this->report->start_date->add(new DateInterval("P1D"));
+      // $this->report->start_date->add(new DateInterval("P1D"));
       $end_date = (clone $this->report->start_date)->add($this->frequency)->sub(new DateInterval("P1D"));
     } else if( $this->frequency == "bi-weekly" ){
-      $this->report->start_date->add(new DateInterval("P1D"));
+      // $this->report->start_date->add(new DateInterval("P1D"));
       $end_date = (clone $this->report->start_date)->add(new DateInterval("P2W"))->sub(new DateInterval("P1D"));
     } else if( $this->frequency == "monthly" ) { // if( $this->frequency == "monthly" ){
       $end_date = new DateTime( $this->report->start_date->format('Y-m-t') );
@@ -32,8 +33,9 @@ class Client extends BaseModel {
     }
 
     $this->report->end_date   = $end_date;
-    $this->last_invoiced_date = isset( $attributes['last_invoiced_date'] ) ? (new DateTime($attributes['last_invoiced_date'])) : null;
+    $this->period_start_date = isset( $attributes['period_start_date'] ) ? (new DateTime($attributes['period_start_date'])) : null;
     $this->next_invoice_date  = (clone $end_date)->add(new DateInterval("P1D"));
+    $this->last_invoice_date  = (clone $this->report->start_date)->sub(new DateInterval("P1D"));
   }
 
   public function get_toggl_url(){

@@ -10,7 +10,7 @@ $clients = [
     'title' => 'Company Name',
     'toggl_client_id' => 0,
     'frequency' => 'bi-weekly', // Frequency can be 'bi-weekly' or 'weekly' or a DateInterval period
-    'last_invoiced_date' => 'May 3, 2024', // The last date that this client was invoiced for
+    'period_start_date' => 'May 3, 2024', // The last date that this client was invoiced for
   ]),
 ];
 

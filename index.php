@@ -40,8 +40,8 @@ foreach( $projects as $k => $project ){
               <div>
                 <?= htmlspecialchars($client->title);?>
                 <small class="d-block">Reporting Period: <?= $client->report->start_date->format('F j, Y');?> - <?= $client->report->end_date->format('F j, Y');?></small>
-                <?php if( !is_null( $client->last_invoiced_date ) ) :?>
-                <small class="d-block">Last Invoice: <?= $client->last_invoiced_date->format('F j, Y');?></small>
+                <?php if( !is_null( $client->last_invoice_date ) ) :?>
+                <small class="d-block">Last Invoice: <?= $client->last_invoice_date->format('F j, Y');?></small>
                 <?php endif;?>
                 <small class="d-block">Next Invoice: <?= $client->next_invoice_date->format('F j, Y');?></small>
               </div>
@@ -54,6 +54,9 @@ foreach( $projects as $k => $project ){
               foreach( $time_entries as $entry => $details ):
                 $time_entry = new TogglTimeEntry($details);
 
+                if( isset( $_GET['hide_invoiced'] ) && $time_entry->get_is_invoiced() )
+                  continue;
+                
                 // // If this time entry was already invoiced don't show it
                 // if( $time_entry->get_is_invoiced() ){
                 //   continue;
