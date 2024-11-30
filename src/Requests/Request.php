@@ -25,7 +25,10 @@ class Request {
   }
 
 
-  protected function cache( $key, $callback, $timeout = 500 ){
+  protected function cache( $key, $callback, $timeout = null ){
+    if( is_null( $timeout ) ){
+      $timeout = defined('CACHE_TTL') ? CACHE_TTL : 500;
+    }
     $cache_file = $this->cache_dir . '/' . $key . '.cache';
 
     // TODO: Test for valid cache creation

@@ -1,2 +1,4 @@
 config.php
 vendor/
+cache/
+error_log
